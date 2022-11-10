@@ -117,7 +117,7 @@ float PID_Controller_Calculate(PID_Controller* controller, float err_input)
     controller->__Iout = controller->KI*err_input;//update Iout
 
     controller->__Dout[controller->__index_count] = controller->KD*(err_input - 2.0f*controller->__input[controller->__index_count^1] + controller->__input[controller->__index_count]) / (controller->Ts + controller->Tc) / (controller->Ts + controller->Tc)
-        + 2.0f*controller->__coeff_b*controller->__Dout[controller->__index_count^1] - controller->__Dout[controller->__index_count]*controller->__coeff_a * controller->__coeff_a;
+        + 2.0f*controller->__coeff_a*controller->__Dout[controller->__index_count^1] - controller->__Dout[controller->__index_count]*controller->__coeff_a * controller->__coeff_a;
     //update Dout[index]
 
     controller->__index_count ^= 1;// update 0/1 counter
