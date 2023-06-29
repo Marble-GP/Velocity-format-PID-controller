@@ -2,8 +2,8 @@
  * @file controller.c
  * @author Watanabe Shohei
  * @brief velocity format PID controller module
- * @version 0.3
- * @date 2021-11-20
+ * @version 0.3.1
+ * @date 2023-06-29
  * 
  */
 
@@ -22,7 +22,6 @@ void PID_Controller_Init(PID_Controller* controller, float KP, float KI, float K
     controller->Tc = 1.0f/((float)__MYTWOPI*f_cut);
 
     controller->__coeff_a = controller->Tc/(controller->Tc+controller->Ts);
-    controller->__coeff_b = controller->Ts / (controller->Tc + controller->Ts);
 
     controller->__index_count = 0;
 
@@ -46,7 +45,6 @@ void PID_Controller_Init_std(PID_Controller* controller, float KP, float TI, flo
 
 
     controller->__coeff_a = controller->Tc / (controller->Tc + controller->Ts);
-    controller->__coeff_b = controller->Ts / (controller->Tc + controller->Ts);
 
     controller->__index_count = 0;
 
@@ -70,7 +68,6 @@ void PI_Controller_Init(PID_Controller* controller, float KP, float KI, float re
 
 
     controller->__coeff_a = controller->Tc / (controller->Tc + controller->Ts);
-    controller->__coeff_b = controller->Ts / (controller->Tc + controller->Ts);
 
     controller->__index_count = 0;
 
@@ -94,7 +91,6 @@ void PI_Controller_Init_std(PID_Controller* controller, float KP, float TI, floa
 
 
     controller->__coeff_a = controller->Tc / (controller->Tc + controller->Ts);
-    controller->__coeff_b = controller->Ts / (controller->Tc + controller->Ts);
 
     controller->__index_count = 0;
 
@@ -120,8 +116,9 @@ float PID_Controller_Calculate(PID_Controller* controller, float err_input)
         + 2.0f*controller->__coeff_a*controller->__Dout[controller->__index_count^1] - controller->__Dout[controller->__index_count]*controller->__coeff_a * controller->__coeff_a;
     //update Dout[index]
 
-    controller->__index_count ^= 1;// update 0/1 counter
     controller->__input[controller->__index_count] = err_input;//update previous input
+
+    controller->__index_count ^= 1;// update 0/1 counter
     //return d(P+I+D)+output_pre
     return controller->__output_pre = __MYLIMIT((controller->__Pout + controller->__Iout + controller->__Dout[controller->__index_count^1])*controller->Ts + controller->__output_pre, controller->ref_lim);
 }
@@ -147,10 +144,5 @@ float PI_Controller_Calculate_nonfilter(PID_Controller* controller, float err_in
         
         controller->__input[0] = err_input;//update previous input
     return controller->__output_pre = __MYLIMIT((controller->__Pout + controller->__Iout)*controller->Ts + controller->__output_pre, controller->ref_lim);
-}
-
-int __comp(float* p1, float* p2)
-{
-    return *p1 - *p2;
 }
 

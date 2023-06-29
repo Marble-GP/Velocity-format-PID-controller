@@ -26,7 +26,6 @@ typedef struct __PID_Controller
     float Tc;
     float Ts;
     float __coeff_a;// Tc/(Tc+Ts)
-    float __coeff_b;// Ts/(Tc+Ts)
     float __input[2];
     float __Iout;
     float __Pout;
@@ -81,6 +80,5 @@ void PI_Controller_Init_std(PID_Controller* controller, float KP, float TI, floa
 float PI_Controller_Calculate(PID_Controller* controller, float err_input);
 float PI_Controller_Calculate_nonfilter(PID_Controller* controller, float err_input);
 
-int __comp(float* p1, float* p2);
 
 #endif
