@@ -2,8 +2,8 @@
  * @file controller.c
  * @author Watanabe Shohei
  * @brief velocity format PID controller module
- * @version 0.2
- * @date 2021-09-20
+ * @version 0.3.1
+ * @date 2023-06-29
  * 
  */
 
