@@ -2,13 +2,17 @@
  * @file controller.c
  * @author Watanabe Shohei
  * @brief velocity format PID controller module
- * @version 0.3.1
- * @date 2023-06-29
+ * @version 0.3.2
+ * @date 2024-01-11
  * 
  */
 
 #ifndef __CONTROLLER_H__
 #define __CONTROLLER_H__
+
+#include <stdint.h>
+#include <stdlib.h>
+
 
 #define __MYABS(x) ((x) > 0 ? (x) : (-x))
 #define __MYLIMIT(x, lim) ((x) > (lim) ? (lim) : ((x) < -(lim) ? -(lim) : (x)))
@@ -34,7 +38,7 @@ typedef struct __PID_Controller
     uint8_t __index_count;
     
 
-} PID_Controller;
+} PID_Controller_t;
 
 
 /**
@@ -48,7 +52,7 @@ typedef struct __PID_Controller
  * @param f_cutoff cut-off freq.[Hz] of each LPF
  * @param fs sampling(+calclation) freq. [Hz]
  */
-void PID_Controller_Init(PID_Controller* controller, float KP, float KI, float KD, float ref_lim, float f_cutoff, float fs);
+void PID_Controller_Init(PID_Controller_t* controller, float KP, float KI, float KD, float ref_lim, float f_cutoff, float fs);
 
 
 /**
@@ -62,23 +66,62 @@ void PID_Controller_Init(PID_Controller* controller, float KP, float KI, float K
  * @param f_cutoff cut-off freq.[Hz] of each LPF
  * @param fs sampling(+calclation) freq. [Hz]
  */
-void PID_Controller_Init_std(PID_Controller* controller, float KP, float TI, float TD, float ref_lim, float f_cutoff, float fs);
+void PID_Controller_Init_std(PID_Controller_t* controller, float KP, float TI, float TD, float ref_lim, float f_cutoff, float fs);
 
 /**
- * @brief calculate manipulating value
+ * @brief calculate manipulating value with PID
  * 
  * @param controller pointer to the controller
- * @param val_ref reference value
- * @param val feedback value
+ * @param err_input error input
  * @return float  manipulating value
  */
-float PID_Controller_Calculate(PID_Controller* controller, float err_input);
+float PID_Oprate(PID_Controller_t* controller, float err_input);
 
 
-void PI_Controller_Init(PID_Controller* controller, float KP, float KI, float ref_lim, float f_cut, float fs);
-void PI_Controller_Init_std(PID_Controller* controller, float KP, float TI, float ref_lim, float f_cut, float fs);
-float PI_Controller_Calculate(PID_Controller* controller, float err_input);
-float PI_Controller_Calculate_nonfilter(PID_Controller* controller, float err_input);
+/**
+ * @brief initialize a PI controller
+ * 
+ * @param controller pointer to a controller
+ * @param KP Propotial gain
+ * @param KI Integral gain
+ * @param ref_lim limit value of output
+ * @param f_cutoff cut-off freq.[Hz] of each LPF
+ * @param fs sampling(+calclation) freq. [Hz]
+ */
+void PI_Controller_Init(PID_Controller_t* controller, float KP, float KI, float ref_lim, float f_cut, float fs);
+
+
+
+/**
+ * @brief initialize a PI controller(standard form)
+ * 
+ * @param controller pointer to a controller
+ * @param KP Propotial gain
+ * @param TI Integral time
+ * @param ref_lim limit value of output
+ * @param f_cutoff cut-off freq.[Hz] of each LPF
+ * @param fs sampling(+calclation) freq. [Hz]
+ */
+void PI_Controller_Init_std(PID_Controller_t* controller, float KP, float TI, float ref_lim, float f_cut, float fs);
+
+
+/**
+ * @brief calculate manipulating value with PI
+ * 
+ * @param controller pointer to the controller
+ * @param err_input error input
+ * @return float  manipulating value
+ */
+float PI_Operate(PID_Controller_t* controller, float err_input);
+
+/**
+ * @brief calculate manipulating value with simple-PI
+ * 
+ * @param controller pointer to the controller
+ * @param err_input error input
+ * @return float  manipulating value
+ */
+float PI_Operate_nonfiltering(PID_Controller_t* controller, float err_input);
 
 
 #endif

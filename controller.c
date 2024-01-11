@@ -2,17 +2,16 @@
  * @file controller.c
  * @author Watanabe Shohei
  * @brief velocity format PID controller module
- * @version 0.3.1
- * @date 2023-06-29
+ * @version 0.3.2
+ * @date 2024-01-11
  * 
  */
 
-#include <stdint.h>
-#include <stdlib.h>
+
 #include "controller.h"
 
 
-void PID_Controller_Init(PID_Controller* controller, float KP, float KI, float KD, float ref_lim, float f_cut, float fs)
+void PID_Controller_Init(PID_Controller_t* controller, float KP, float KI, float KD, float ref_lim, float f_cut, float fs)
 {
     controller->KP = KP;
     controller->KI = KI;
@@ -34,7 +33,7 @@ void PID_Controller_Init(PID_Controller* controller, float KP, float KI, float K
     controller->__output_pre = 0.0f;
 }
 
-void PID_Controller_Init_std(PID_Controller* controller, float KP, float TI, float TD, float ref_lim, float f_cut, float fs)
+void PID_Controller_Init_std(PID_Controller_t* controller, float KP, float TI, float TD, float ref_lim, float f_cut, float fs)
 {
     controller->KP = KP;
     controller->KI = KP/TI;
@@ -57,7 +56,7 @@ void PID_Controller_Init_std(PID_Controller* controller, float KP, float TI, flo
     controller->__output_pre = 0.0f;
 }
 
-void PI_Controller_Init(PID_Controller* controller, float KP, float KI, float ref_lim, float f_cut, float fs)
+void PI_Controller_Init(PID_Controller_t* controller, float KP, float KI, float ref_lim, float f_cut, float fs)
 {
     controller->KP = KP;
     controller->KI = KI;
@@ -80,7 +79,7 @@ void PI_Controller_Init(PID_Controller* controller, float KP, float KI, float re
     controller->__output_pre = 0.0f;
 }
 
-void PI_Controller_Init_std(PID_Controller* controller, float KP, float TI, float ref_lim, float f_cut, float fs)
+void PI_Controller_Init_std(PID_Controller_t* controller, float KP, float TI, float ref_lim, float f_cut, float fs)
 {
     controller->KP = KP;
     controller->KI = KP/TI;
@@ -104,7 +103,7 @@ void PI_Controller_Init_std(PID_Controller* controller, float KP, float TI, floa
 }
 
 
-float PID_Controller_Calculate(PID_Controller* controller, float err_input)
+float PID_Oprate(PID_Controller_t* controller, float err_input)
 {
     controller->__Pout = 
     controller->KP*(err_input - controller->__input[controller->__index_count^1])/(controller->Ts+controller->Tc)
@@ -123,7 +122,7 @@ float PID_Controller_Calculate(PID_Controller* controller, float err_input)
     return controller->__output_pre = __MYLIMIT((controller->__Pout + controller->__Iout + controller->__Dout[controller->__index_count^1])*controller->Ts + controller->__output_pre, controller->ref_lim);
 }
 
-float PI_Controller_Calculate(PID_Controller* controller, float err_input)
+float PI_Operate(PID_Controller_t* controller, float err_input)
 {
     controller->__Pout =
         controller->KP * (err_input - controller->__input[0]) / (controller->Ts + controller->Tc)
@@ -136,7 +135,7 @@ float PI_Controller_Calculate(PID_Controller* controller, float err_input)
     return controller->__output_pre = __MYLIMIT((controller->__Pout + controller->__Iout)*controller->Ts + controller->__output_pre, controller->ref_lim);
 }
 
-float PI_Controller_Calculate_nonfilter(PID_Controller* controller, float err_input)
+float PI_Operate_nonfiltering(PID_Controller_t* controller, float err_input)
 {
         controller->__Pout =
         controller->KP * (err_input - controller->__input[0]) /controller->Ts;
