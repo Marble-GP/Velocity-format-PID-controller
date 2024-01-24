@@ -1,9 +1,9 @@
 /**
  * @file controller.c
- * @author Watanabe Shohei
+ * @author S.Watanabe
  * @brief velocity format PID controller module
- * @version 0.3.2
- * @date 2024-01-11
+ * @version 0.3.3
+ * @date 2024-01-24
  * 
  */
 
@@ -17,7 +17,7 @@
 #define __MYABS(x) ((x) > 0 ? (x) : (-x))
 #define __MYLIMIT(x, lim) ((x) > (lim) ? (lim) : ((x) < -(lim) ? -(lim) : (x)))
 #define __MYLIMIT2(x, min, max) ((x) > (max) ? (max) : ((x) < (min) ? (min) : (x)))
-#define LIN_MAP(x, in_min, in_max, out_min, out_max) ((out_min) + ((in_val) - (in_min))/((in_max) - (in_min))*((out_max) - (out_min)))
+#define LIN_MAP(x, in_min, in_max, out_min, out_max) ((out_min) + ((x) - (in_min))/((in_max) - (in_min))*((out_max) - (out_min)))
 #define __MYPI    (3.141592653589793)
 #define __MYTWOPI (6.283185307179586)
 
@@ -75,7 +75,7 @@ void PID_Controller_Init_std(PID_Controller_t* controller, float KP, float TI, f
  * @param err_input error input
  * @return float  manipulating value
  */
-float PID_Oprate(PID_Controller_t* controller, float err_input);
+float PID_Operate(PID_Controller_t* controller, float err_input);
 
 
 /**
@@ -124,4 +124,10 @@ float PI_Operate(PID_Controller_t* controller, float err_input);
 float PI_Operate_nonfiltering(PID_Controller_t* controller, float err_input);
 
 
+/**
+ *@brief Reset internal variables of the PID controller
+ * 
+ * @param controller  pointer to the controller
+ */
+void PID_Reset(PID_Controller_t* controller);
 #endif

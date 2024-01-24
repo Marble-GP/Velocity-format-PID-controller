@@ -1,9 +1,9 @@
 /**
  * @file controller.c
- * @author Watanabe Shohei
+ * @author S.Watanabe
  * @brief velocity format PID controller module
- * @version 0.3.2
- * @date 2024-01-11
+ * @version 0.3.3
+ * @date 2024-01-24
  * 
  */
 
@@ -103,7 +103,7 @@ void PI_Controller_Init_std(PID_Controller_t* controller, float KP, float TI, fl
 }
 
 
-float PID_Oprate(PID_Controller_t* controller, float err_input)
+float PID_Operate(PID_Controller_t* controller, float err_input)
 {
     controller->__Pout = 
     controller->KP*(err_input - controller->__input[controller->__index_count^1])/(controller->Ts+controller->Tc)
@@ -145,3 +145,13 @@ float PI_Operate_nonfiltering(PID_Controller_t* controller, float err_input)
     return controller->__output_pre = __MYLIMIT((controller->__Pout + controller->__Iout)*controller->Ts + controller->__output_pre, controller->ref_lim);
 }
 
+void PID_Reset(PID_Controller_t* controller)
+{
+    controller->__Pout = 0.0f;
+    controller->__Iout = 0.0f;
+    controller->__Dout[0] = 0.0f;
+    controller->__Dout[1] = 0.0f;
+    controller->__input[0] = 0.0f;
+    controller->__input[1] = 0.0f;
+    controller->__output_pre = 0.0f;
+}
