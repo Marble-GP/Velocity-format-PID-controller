@@ -2,8 +2,8 @@
  * @file controller.c
  * @author S.Watanabe
  * @brief velocity format PID controller module
- * @version 0.3.3
- * @date 2024-01-24
+ * @version 1.0.0
+ * @date 2024-02-05
  * 
  */
 
@@ -105,15 +105,13 @@ void PI_Controller_Init_std(PID_Controller_t* controller, float KP, float TI, fl
 
 float PID_Operate(PID_Controller_t* controller, float err_input)
 {
-    controller->__Pout = 
-    controller->KP*(err_input - controller->__input[controller->__index_count^1])/(controller->Ts+controller->Tc)
-     + controller->__coeff_a*controller->__Pout;//update Pout
+    controller->__Pout = controller->KP*(err_input - controller->__input[controller->__index_count^1]) / controller->Ts; // update Pout
 
     controller->__Iout = controller->KI*err_input;//update Iout
 
-    controller->__Dout[controller->__index_count] = controller->KD*(err_input - 2.0f*controller->__input[controller->__index_count^1] + controller->__input[controller->__index_count]) / (controller->Ts + controller->Tc) / (controller->Ts + controller->Tc)
-        + 2.0f*controller->__coeff_a*controller->__Dout[controller->__index_count^1] - controller->__Dout[controller->__index_count]*controller->__coeff_a * controller->__coeff_a;
-    //update Dout[index]
+    controller->__Dout[controller->__index_count] = controller->KD*(err_input - 2.0f*controller->__input[controller->__index_count^1] + controller->__input[controller->__index_count]) / controller->Ts / (controller->Ts + controller->Tc)
+                                                     + controller->__coeff_a*controller->__Dout[controller->__index_count^1];
+                                                    //update Dout[index]
 
     controller->__input[controller->__index_count] = err_input;//update previous input
 
@@ -124,25 +122,30 @@ float PID_Operate(PID_Controller_t* controller, float err_input)
 
 float PI_Operate(PID_Controller_t* controller, float err_input)
 {
-    controller->__Pout =
-        controller->KP * (err_input - controller->__input[0]) / (controller->Ts + controller->Tc)
-        + controller->__coeff_a * controller->__Pout;//update Pout
+    controller->__Pout = controller->KP*(err_input - controller->__input[controller->__index_count^1]) / controller->Ts; // update Pout
 
-    controller->__Iout = controller->KI * err_input;//update Iout
+    controller->__Iout = controller->KI*err_input;//update Iout
 
     controller->__input[0] = err_input;//update previous input
     //return d(P+I)+output_pre
     return controller->__output_pre = __MYLIMIT((controller->__Pout + controller->__Iout)*controller->Ts + controller->__output_pre, controller->ref_lim);
 }
 
-float PI_Operate_nonfiltering(PID_Controller_t* controller, float err_input)
+float PID_Operate_nonfiltering(PID_Controller_t* controller, float err_input)
 {
-        controller->__Pout =
-        controller->KP * (err_input - controller->__input[0]) /controller->Ts;
-        controller->__Iout = controller->KI * err_input;
-        
-        controller->__input[0] = err_input;//update previous input
-    return controller->__output_pre = __MYLIMIT((controller->__Pout + controller->__Iout)*controller->Ts + controller->__output_pre, controller->ref_lim);
+    controller->__Pout = controller->KP*(err_input - controller->__input[controller->__index_count^1]) / controller->Ts; // update Pout
+
+    controller->__Iout = controller->KI*err_input;//update Iout
+
+    controller->__Dout[controller->__index_count] = controller->KD*(err_input - 2.0f*controller->__input[controller->__index_count^1] + controller->__input[controller->__index_count]) / controller->Ts / controller->Ts ;
+                                                    //update Dout[index]
+
+    controller->__input[controller->__index_count] = err_input;//update previous input
+
+    controller->__index_count ^= 1;// update 0/1 counter
+    
+    //return d(P+I+D)+output_pre
+    return controller->__output_pre = __MYLIMIT((controller->__Pout + controller->__Iout + controller->__Dout[controller->__index_count^1])*controller->Ts + controller->__output_pre, controller->ref_lim);
 }
 
 void PID_Reset(PID_Controller_t* controller)

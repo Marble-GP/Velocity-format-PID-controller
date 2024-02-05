@@ -2,8 +2,8 @@
  * @file controller.c
  * @author S.Watanabe
  * @brief velocity format PID controller module
- * @version 0.3.3
- * @date 2024-01-24
+ * @version 1.0.0
+ * @date 2024-02-05
  * 
  */
 
@@ -115,13 +115,13 @@ void PI_Controller_Init_std(PID_Controller_t* controller, float KP, float TI, fl
 float PI_Operate(PID_Controller_t* controller, float err_input);
 
 /**
- * @brief calculate manipulating value with simple-PI
+ * @brief calculate manipulating value with nonfiltering-PID
  * 
  * @param controller pointer to the controller
  * @param err_input error input
  * @return float  manipulating value
  */
-float PI_Operate_nonfiltering(PID_Controller_t* controller, float err_input);
+float PID_Operate_nonfiltering(PID_Controller_t* controller, float err_input);
 
 
 /**
