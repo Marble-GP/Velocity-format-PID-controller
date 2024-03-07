@@ -2,8 +2,8 @@
  * @file controller.c
  * @author S.Watanabe
  * @brief velocity format PID controller module
- * @version 1.0.0
- * @date 2024-02-05
+ * @version 1.1.0
+ * @date 2024-03-04
  * 
  */
 
@@ -122,7 +122,7 @@ float PID_Operate(PID_Controller_t* controller, float err_input)
 
 float PI_Operate(PID_Controller_t* controller, float err_input)
 {
-    controller->__Pout = controller->KP*(err_input - controller->__input[controller->__index_count^1]) / controller->Ts; // update Pout
+    controller->__Pout = controller->KP*(err_input - controller->__input[0]) / controller->Ts; // update Pout
 
     controller->__Iout = controller->KI*err_input;//update Iout
 

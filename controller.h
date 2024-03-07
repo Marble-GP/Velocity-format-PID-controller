@@ -2,8 +2,8 @@
  * @file controller.c
  * @author S.Watanabe
  * @brief velocity format PID controller module
- * @version 1.0.0
- * @date 2024-02-05
+ * @version 1.1.0
+ * @date 2024-03-04
  * 
  */
 
